@@ -1,0 +1,5 @@
+cd C:\Users\sondj\OneDrive\Documents\dig_ital_postgres
+
+venv\Scripts\activate
+
+python manage.py runserver
