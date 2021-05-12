@@ -13,7 +13,7 @@ class Config:
     SQLALCHEMY_COMMIT_ON_TEARDOWN = True
     UPLOAD_DIRECTORY = os.path.join('app', 'static', 'res', 'uploads') 
     UPLOAD_DIRECTORY_TMP = os.path.join('app', 'static', 'res', 'tmp') 
-    SQLALCHEMY_DATABASE_URI = os.environ['DATABASE_URL']
+    SQLALCHEMY_DATABASE_URI = os.environ['HEROKU_POSTGRESQL_GRAY_URL']
 
     @staticmethod
     def init_app(app):
