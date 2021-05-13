@@ -6,7 +6,7 @@ load_dotenv(find_dotenv())
 S3_BUCKET = os.environ["S3_BUCKET"]
 S3_KEY = os.environ["S3_KEY"]
 S3_SECRET = os.environ["S3_SECRET"]
-S3_LOCATION = f'http://{S3_BUCKET}.s3.amazonaws.com'
+S3_OBJECT_LOCATION = os.environ["S3_OBJECT_LOCATION"]
 
 class Config:
     SECRET_KEY = os.environ['FLASK_SECRET_KEY']
