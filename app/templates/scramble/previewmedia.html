@@ -28,10 +28,6 @@
     </div>
     <div class="main">
 
-        {{ selection }}
-
-        {{ endtime }}
-
         {% if game_type == 'video' %}
             <video id="player" class="video-js" preload="auto" data-setup="{}">
                 <source src={{ media_temp_path|safe }} type={{  media_format|safe  }}>

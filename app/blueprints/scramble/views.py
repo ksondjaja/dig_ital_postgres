@@ -860,12 +860,9 @@ def mediaequal():
         endclip = (i+1)*media_length + starttime
         game_content[i] = f"{startclip} {endclip}"
 
-    session['selection'] = selection
     session['game_content'] = game_content
     session['game_length'] = game_length
-
     session['full_media'] = full_media
-    session['endtime'] = endtime
 
     return redirect(url_for('scramble.previewmedia'))
 
@@ -914,12 +911,9 @@ def previewmedia():
     full_media = session.get('full_media')
     game_type = session.get('game_type')
 
-    selection = session.get('selection')
-    endtime = session.get('endtime')
-
     session['media_path'] = media_temp_path
 
-    return render_template("scramble/previewmedia.html", game_type=game_type, game_content=game_content, media_temp_path=media_temp_path, media_format=media_format, full_media=full_media, selection=selection, endtime=endtime)
+    return render_template("scramble/previewmedia.html", game_type=game_type, game_content=game_content, media_temp_path=media_temp_path, media_format=media_format, full_media=full_media)
 
 
 # @scramble.route('/savemedia', methods=['GET'])
