@@ -14,20 +14,6 @@ s3 = boto3.client(
 
 def get_categories():
     """Get all available game categories from SQL enum"""
-    
-    # query = f"SELECT COLUMN_TYPE AS game_category_names FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA='dig_ital' AND TABLE_NAME='scramble_games' AND COLUMN_NAME='game_category'"
-    # allcatquery = str(db.execute(query).fetchone()[0])
-    # allcat = []
-    # cat = ""
-    # for i in range(6, len(allcatquery)):
-    #     if allcatquery[i] in ',)':
-    #         allcat.append(cat)
-    #         cat = ""
-    #     elif allcatquery[i]=="'":
-    #         continue
-    #     else:
-    #         cat += allcatquery[i]
-    # return allcatquery, allcat
 
     query = f"SELECT DISTINCT game_category from scramble_games"
     allcatquery = db.execute(query).fetchall()

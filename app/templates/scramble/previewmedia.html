@@ -27,6 +27,11 @@
         <a href={{  url_for('scramble.cancelcreate')  }} class="smlbtn"><div class="cancelbuttonsml"><div class="fakebuttonsmltext">Cancel (discard unsaved game info)</div></div></a><br>
     </div>
     <div class="main">
+
+        {{ selection }}
+
+        {{ endtime }}
+
         {% if game_type == 'video' %}
             <video id="player" class="video-js" preload="auto" data-setup="{}">
                 <source src={{ media_temp_path|safe }} type={{  media_format|safe  }}>
@@ -46,7 +51,7 @@
         {% for key, value in game_content.items() %}
             <div class="clip" data-cindex={{  key|safe  }}>
                 <div class="content">
-                    <button class="play" data-seconds="{{  value|safe  }}" >&#9658 Clip no. {{  loop.index}}</button>
+                    <button class="play" data-seconds="{{  value|safe  }}" >&#9658 Clip no. {{ loop.index }}</button>
                 </div>
             </div>
 

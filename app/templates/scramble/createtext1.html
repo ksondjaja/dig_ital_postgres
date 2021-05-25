@@ -72,10 +72,10 @@
                 }
             }else{
                 inputform.style.display = "block"
-                for(var i=0; i<5; i++){
+                for(var i=0; i<3; i++){
                     addInput(i, "");
                 }
-                var n = 5;
+                var n = 3;
             }
 
             for (var i = 0; i < accordions.length; i++) {
@@ -135,7 +135,7 @@
     <div class="main">
         <p>{{  message  }}</p>
         <h3>Select how you want to enter text into cards:</h3>
-        <button class="accordion">Provide a paragraph containing 5 to 15 sentences, and the sentences will be automatically separated into different cards.</button>
+        <button class="accordion">Provide a paragraph containing 3 to 15 sentences, and the sentences will be automatically separated into different cards.</button>
         <div class="textinputoption">
             <form action={{  url_for('scramble.createtext2b')  }} method="post">
                 Enter text with multiple sentences, separated by periods, exclamation mark, or question mark:<br>
@@ -144,10 +144,12 @@
             </form>
         </div>
 
-        <button class="accordion">Manually enter each word, phrase, or sentence into a cards.</button>
+        <button class="accordion">Manually enter each word, phrase, or sentence into each card.</button>
         <div class="textinputoption">
             <label for="segmentnumber">Select number of cards to shuffle:</label>
             <select id="segmentnumber" name="segmentnumber">
+                <option value="3">3 cards</option>
+                <option value="4">4 cards</option>
                 <option value="5">5 cards</option>
                 <option value="6">6 cards</option>
                 <option value="7">7 cards</option>

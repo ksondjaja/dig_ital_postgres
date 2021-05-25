@@ -130,11 +130,11 @@ def playgame():
     game_difficulty = request.form["game_difficulty"]
 
     if game_difficulty == 'easy':
-        query = f"SELECT game_id, game_content, game_title, game_length FROM scramble_games WHERE is_approved=1 AND game_type='{played_game_type}' AND game_length<=7 ORDER BY RANDOM() LIMIT 1"
+        query = f"SELECT game_id, game_content, game_title, game_length FROM scramble_games WHERE is_approved=1 AND game_type='{played_game_type}' AND game_length<=6 ORDER BY RANDOM() LIMIT 1"
     elif game_difficulty == 'difficult':
         query = f"SELECT game_id, game_content, game_title, game_length FROM scramble_games WHERE is_approved=1 AND game_type='{played_game_type}' AND game_length>=11 ORDER BY RANDOM() LIMIT 1"
     else:
-        query = f"SELECT game_id, game_content, game_title, game_length FROM scramble_games WHERE is_approved=1 AND game_type='{played_game_type}' AND game_length>=8 and game_length<=10 ORDER BY RANDOM() LIMIT 1"
+        query = f"SELECT game_id, game_content, game_title, game_length FROM scramble_games WHERE is_approved=1 AND game_type='{played_game_type}' AND game_length>=7 and game_length<=10 ORDER BY RANDOM() LIMIT 1"
 
     game = db.execute(query).fetchone()
 
@@ -576,6 +576,7 @@ def cancelcreate():
         if game_type in ['audio', 'video']:
 
             if 'game_title' in session:
+                game_title = session.get('game_title')
                 util.delete_from_s3('temporary', game_title)
                 session.pop('game_title', None)
 
@@ -739,8 +740,8 @@ def createtext2b():
 
     game_length = len(game_content)
 
-    if game_length<5 or game_length>15:
-        return render_template("scramble/createtext1.html", game_content=game_content, game_input=game_input, message="Please enter between 5 and 15 sentences in the paragraph.")
+    if game_length<3 or game_length>15:
+        return render_template("scramble/createtext1.html", game_content=game_content, game_input=game_input, message="Please enter between 3 and 15 sentences in the paragraph.")
 
     session['game_content'] = game_content
     session['game_length'] = game_length
@@ -789,12 +790,12 @@ def uploadtmp():
             message = f"Please select a .mp4 video file sized under {max_mb}MB"
             
             if (size > max_mb*1024*1024) or (file_name[-1] not in ["mp4"]):
-                return render_template("scramble/createmedia.html", message=message, extension=extension, size=size)
+                return render_template("scramble/uploadmedia.html", message=message, extension=extension, max_mb=max_mb)
         elif game_type == 'audio':
             message = f"Please select a .mp3 or .wav audio file sized under {max_mb}MB"
             
             if (size > max_mb*1024*1024) or (file_name[-1] not in ["mp3", "wav"]):
-                return render_template("scramble/createmedia.html", message=message, extension=extension, size=size)
+                return render_template("scramble/uploadmedia.html", message=message, extension=extension, max_mb=max_mb)
         
 
         if uploaded_file.filename != '':
@@ -833,9 +834,45 @@ def createmedia():
     return render_template("scramble/createmedia2.html", media_temp_path=media_temp_path, media_format=media_format, game_content=game_content, game_input=game_input, game_type=game_type)
 
 
-@scramble.route('/previewmedia', methods=["POST"])
+@scramble.route('/mediaequal', methods=['POST'])
 @login_required
-def previewmedia():
+def mediaequal():
+
+    selection = request.form['timeequal']
+
+    game_length = int(request.form['equallengthcards'])
+
+    if selection=="whole":
+        starttime = 0
+        endtime = float(request.form.get('wholeduration'))
+    else:
+        starttime = float(request.form.get('mediastart'))
+        endtime = float(request.form.get('mediaend'))
+
+    full_media = f"{starttime} {endtime}"
+
+    media_length = (endtime-starttime)/game_length
+
+    game_content = dict()
+
+    for i in range(game_length):
+        startclip = i*media_length + starttime
+        endclip = (i+1)*media_length + starttime
+        game_content[i] = f"{startclip} {endclip}"
+
+    session['selection'] = selection
+    session['game_content'] = game_content
+    session['game_length'] = game_length
+
+    session['full_media'] = full_media
+    session['endtime'] = endtime
+
+    return redirect(url_for('scramble.previewmedia'))
+
+
+@scramble.route('/mediamanual', methods=["POST"])
+@login_required
+def mediamanual():
     """Store video start and end times entered into each card from multiple fields"""
 
     game_content = dict()
@@ -862,12 +899,12 @@ def previewmedia():
     session['game_length'] = game_length
     session['full_media'] = full_media
 
-    return redirect(url_for('scramble.previewmedia2'))
+    return redirect(url_for('scramble.previewmedia'))
 
 
-@scramble.route('/previewmedia2', methods=["GET"])
+@scramble.route('/previewmedia', methods=["GET"])
 @login_required
-def previewmedia2():
+def previewmedia():
     """Preview game content for audio or video game"""
 
     media_temp_path = session.get('media_temp_path')
@@ -877,9 +914,12 @@ def previewmedia2():
     full_media = session.get('full_media')
     game_type = session.get('game_type')
 
+    selection = session.get('selection')
+    endtime = session.get('endtime')
+
     session['media_path'] = media_temp_path
 
-    return render_template("scramble/previewmedia.html", game_type=game_type, game_content=game_content, media_temp_path=media_temp_path, media_format=media_format, full_media=full_media)
+    return render_template("scramble/previewmedia.html", game_type=game_type, game_content=game_content, media_temp_path=media_temp_path, media_format=media_format, full_media=full_media, selection=selection, endtime=endtime)
 
 
 # @scramble.route('/savemedia', methods=['GET'])

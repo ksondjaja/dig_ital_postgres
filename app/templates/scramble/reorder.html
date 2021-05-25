@@ -24,7 +24,7 @@
             {% if game_type=='text' %}
                 <a href={{ url_for('scramble.previewtext')  }}><div class="fakebutton"><div class="fakebuttontext">Back</div></div></a>
             {% elif game_type=='video' or game_type=='audio' %}
-                <a href={{ url_for('scramble.previewmedia2')  }}><div class="fakebutton"><div class="fakebuttontext">Back</div></div></a>
+                <a href={{ url_for('scramble.previewmedia')  }}><div class="fakebutton"><div class="fakebuttontext">Back</div></div></a>
             {% endif %}
 
         {% elif mode=='game' %}

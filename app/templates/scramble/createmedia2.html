@@ -19,6 +19,9 @@
     <script>
         document.addEventListener('DOMContentLoaded', function(){
 
+            var accordions = document.querySelectorAll('.accordion');
+            var previous;
+
             var player = document.querySelector('#player');
 
             var gameinput = '{{  game_input|safe  }}';
@@ -30,7 +33,8 @@
 
             var br = document.createElement("br");
 
-            document.querySelector('#inputform').style.display = "block"
+            document.querySelector('#inputform').style.display = "block";
+
 
             function addInput(a, mark, value){
                 var div = document.createElement("div")
@@ -87,6 +91,41 @@
                 }
             }
 
+            for (var i = 0; i < accordions.length; i++) {
+                accordions[i].onclick = function() {
+                    if(previous){
+                        previous.classList.toggle("active",false);
+                        previous.nextElementSibling.classList.toggle("show",false);
+                        previous.nextElementSibling.style.display = "none";
+                        previous.style.background = "#29bea3";
+                    }
+                    this.classList.toggle("active");
+                    this.nextElementSibling.classList.toggle("show");
+                    this.nextElementSibling.style.display = "block";
+                    this.style.background = "#229983";
+
+                    previous=this;
+                }
+            }
+
+            document.querySelector('#timeequalselect').addEventListener('click', function(){
+                console.log('select');
+                document.querySelector('#selectstartendtimeequal').style.display = 'block';
+            });
+
+            document.querySelector('#timeequalwhole').addEventListener('click', function(){
+                console.log('whole');
+                document.querySelector('#selectstartendtimeequal').style.display = 'none';
+            });
+
+            document.querySelector('#startmedia').addEventListener('click', getStart);
+            document.querySelector('#endmedia').addEventListener('click', getStart);
+
+            player.addEventListener('loadedmetadata', function(){
+                document.querySelector('#wholeduration').value = player.duration;
+                console.log(player.duration)
+            });
+            
 
             if(n >0){
                 document.querySelector('#segmentnumber').value = `${n}`;
@@ -107,7 +146,7 @@
                     var thistimebttn = document.querySelectorAll(`button[data-tindex='${i}']`);
                 }
             }else{
-                for(var i=0; i<5; i++){
+                for(var i=0; i<3; i++){
                     var label = document.createElement("label");
                     label.innerHTML = `Clip ${i+1}:  `;
                     label.setAttribute("for", `start${i}`);
@@ -121,7 +160,7 @@
 
                     var thistimebttn = document.querySelectorAll(`button[data-tindex='${i}']`);
                 }
-                var n = 5;
+                var n = 3;
             }
             
             var clipstart = document.querySelectorAll('.starttime');
@@ -197,19 +236,74 @@
         </div>
         <div class="main">
 
-            {% if game_type == 'video' %}
-                <video id="player" class="video-js" preload="auto" width="640" height="360" data-setup="{}" controls>
-                    <source src={{ media_temp_path|safe }} type={{  media_format|safe  }}>
-                </video>
-            {% elif game_type == 'audio' %}
-                <audio id="player" controls>
-                    <source src={{ media_temp_path|safe }} type={{  media_format|safe  }}>
-                </audio>
-            {% endif %}
+            <div class="playerarea">
+                {% if game_type == 'video' %}
+                    <video id="player" class="video-js" preload="auto" width="640" height="360" data-setup="{}" controls>
+                        <source src={{ media_temp_path|safe }} type={{  media_format|safe  }}>
+                    </video>
+                {% elif game_type == 'audio' %}
+                    <audio id="player" controls>
+                        <source src={{ media_temp_path|safe }} type={{  media_format|safe  }}>
+                    </audio>
+                {% endif %}
+            </div>
+            
 
+            <h3>Select how you want to slice media into cards:</h3>
+            <button class="accordion">Automatically split video/audio into clips of equal lengths</button>
+            <div class="timeinput">
+                <form action={{  url_for('scramble.mediaequal')  }} method="post">
+                    <div>
+                        <label for="equallengthcards">Select number of clips to slice the video/audio into:</label>
+                        <select id="equallengthcards" name="equallengthcards">
+                            <option value="3">3 clips</option>
+                            <option value="4">4 clips</option>
+                            <option value="5">5 clips</option>
+                            <option value="6">6 clips</option>
+                            <option value="7">7 clips</option>
+                            <option value="8">8 clips</option>
+                            <option value="9">9 clips</option>
+                            <option value="10">10 clips</option>
+                            <option value="11">11 clips</option>
+                            <option value="12">12 clips</option>
+                            <option value="13">13 clips</option>
+                            <option value="14">14 clips</option>
+                            <option value="15">15 clips</option>
+                        </select>
+                    </div>
+
+                    <div class="timeequalrad">
+                        <input class="timeequalradio" type="radio" id="timeequalwhole" name="timeequal" value="whole" checked>
+                        <label for="timeequalwhole">Use entire video/audio file</label>
+                        <div style="display:none">
+                            <input id="wholeduration" name="wholeduration" type="text">
+                        </div>
+                        <br>
+                        <p>OR</p>
+                        <input class="timeequalradio" type="radio" id="timeequalselect" name="timeequal" value="select">
+                        <label for="timeequalselect">Select start and end time of the full video/audio you want to slice.</label>
+                        
+                        <div id="selectstartendtimeequal">
+                            <button id="startmedia" type="button" data-tindex="x">&#8627</button>
+                            <input id="startx" name="mediastart" placeholder="Start Time">&nbsp;
+                            <button id="endmedia" type="button" data-tindex="y">&#8627</button>
+                            <input id="starty" name="mediaend" placeholder="End Time">
+                            <br>
+                        </div>
+                    <br>
+                    <button type="submit">Submit</button>
+                    </div>
+                    
+                </form>
+                <br>
+            </div>
+
+            <button class="accordion">Manually enter start and end times into each card.</button>
             <div class="timeinput">
                 <label for="segmentnumber">Select number of clips to slice and shuffle:</label>
                 <select id="segmentnumber" name="segmentnumber">
+                    <option value="3">3 clips</option>
+                    <option value="4">4 clips</option>
                     <option value="5">5 clips</option>
                     <option value="6">6 clips</option>
                     <option value="7">7 clips</option>
@@ -225,7 +319,7 @@
                 <br>
                 <div id="inputform">
                     <p>Click &#8627 to enter current time as start or end time.</p>
-                    <form action={{  url_for('scramble.previewmedia')  }} method="post">
+                    <form action={{  url_for('scramble.mediamanual')  }} method="post">
                         <div id="inputfields"></div>
                         <br>
                         <button type="submit">Submit</button>

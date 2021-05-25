@@ -14,6 +14,7 @@ class Config:
     UPLOAD_DIRECTORY = os.path.join('app', 'static', 'res', 'uploads') 
     UPLOAD_DIRECTORY_TMP = os.path.join('app', 'static', 'res', 'tmp') 
     SQLALCHEMY_DATABASE_URI = os.environ['DATABASE_URL']
+    SQLALCHEMY_TRACK_MODIFICATIONS = False
 
     @staticmethod
     def init_app(app):
